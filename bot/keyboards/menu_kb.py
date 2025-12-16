@@ -85,6 +85,8 @@ def __get_buttons():
         
         'extend_btn': InlineKeyboardButton(text=emoji.emojize(":money_bag:")+ " Расширить группу",
                                     callback_data=menu_cb.ExtendGroupCallback(send_to_santa=False).pack()),
+        'members': InlineKeyboardButton(text="👥 Участники",
+                                    callback_data=menu_cb.GetMembersCallback().pack()),
     }
 
 
@@ -93,6 +95,9 @@ def get_user_menu(is_extended: bool = True) -> InlineKeyboardMarkup:
     inline_keyboard = [
             [
                 buttons['link'], buttons['set_wishlist'],
+            ],
+            [
+                buttons['members'],
             ],
             [
                 buttons['msg_santa']
@@ -127,6 +132,9 @@ def get_admin_menu(is_extended: bool = True) -> InlineKeyboardMarkup:
             ],
             [
                 buttons['shuffle'], buttons['pair'], 
+            ],
+            [
+                buttons['members'],
             ],
             [
                 buttons['msg_santa']

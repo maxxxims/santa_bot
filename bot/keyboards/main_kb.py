@@ -13,6 +13,10 @@ def get_start_kb() -> InlineKeyboardMarkup:
             [
                 InlineKeyboardButton(text=emoji.emojize(":high_voltage:")+ " Давай!",
                                     callback_data=FirstBtnCallback().pack())
+            ],
+            [
+                InlineKeyboardButton(text=emoji.emojize(":check_mark_button:")+ " У меня уже есть код!",
+                                    callback_data=JoinGroupCallback().pack())
             ]
         ]
 )

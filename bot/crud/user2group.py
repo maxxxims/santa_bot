@@ -57,11 +57,10 @@ async def delete_users_from_group(user_ids: List[int], group_id: int) -> None:
         query = delete(UserGroup).where(UserGroup.user_id.in_(user_ids), UserGroup.group_id == group_id)
         await session.execute(query)
         await session.commit()
-        
-        
-        
+    
+    
 async def get_group_members(group_id: int) -> List[UserGroup]:
     async with async_session() as session:
-        query = select(UserGroup).where(UserGroup.group_id == group_id)
+        query = select(UserGroup).where(UserGroup.group_id == group_id).options(joinedload(UserGroup.user))
         result = (await session.execute(query)).scalars().all()
         return result

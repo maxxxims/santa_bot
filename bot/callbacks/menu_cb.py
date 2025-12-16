@@ -54,3 +54,6 @@ class RefreshPaymentCallback(CallbackData, prefix="refresh_pay"):
     
 class NavigationGroupCallback(CallbackData, prefix="nav_group"):
     next_page: int
+    
+class GetMembersCallback(CallbackData, prefix="get_member"):
+    ...

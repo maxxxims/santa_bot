@@ -58,7 +58,9 @@ async def menu_next_button(query: CallbackQuery, user_info: dict, callback_data:
 
 # Основное меню выбранной группы
 @router.callback_query(main_cb.ChooseGroupCallback.filter(), StateFilter(None))
-async def select_group(query: CallbackQuery, user_info: dict, callback_data: main_cb.ChooseGroupCallback):    
+async def select_group(query: CallbackQuery, user_info: dict, callback_data: main_cb.ChooseGroupCallback):  
+    await query.answer()
+    logging.info(f"*************** User {query.from_user.id} selected group {callback_data.group_id}")  
     group_id = callback_data.group_id
     user_id = query.from_user.id
     user_groups = user_info["groups"]
@@ -178,9 +180,12 @@ async def get_pair(query: CallbackQuery, user_info: dict):
         if group_name is not None:
             msg_text += f'Группа: <b>{group_name}</b>\n'
         
-        msg_text += f'Ваш подопечный <a href="tg://user?id={receiver.user_id}">@{receiver.username}</a>'
+        msg_text += f'Твой подопечный <a href="tg://user?id={receiver.user_id}">@{receiver.username}</a>'
         if reciver_wishlist is not None:
             msg_text += f'\nЕго пожелания: {reciver_wishlist}'
+        else:
+            msg_text += '\nОн пока не указал свои пожелания‼️\nТы можешь написать подопечному анонимное сообщение и помочь ему с идеями или просто передать тёплые слова 💌'
+            
         await query.message.answer(
             msg_text, parse_mode="HTML"
         )
@@ -329,6 +334,28 @@ async def set_wishlist(message: Message, user_info: dict, state: FSMContext):
     await state.clear()    
     await logic.send_menu(group_id=user_info['current_group_id'], user_id=message.from_user.id, message=message)
     # await message.answer("Список желаний установлен!")
+    
+    
+# members 
+@router.callback_query(menu_cb.GetMembersCallback.filter(), StateFilter(None))
+async def get_members(query: CallbackQuery, user_info: dict, state: FSMContext):
+    await query.answer()
+    user_id = query.from_user.id
+    current_group_id = user_info.get("current_group_id", None)
+    
+    if current_group_id is None:
+        await query.message.delete()
+        return
+    members = await user2group.get_group_members(group_id=current_group_id)
+    
+    msg = f"Участники группы:\n" 
+    
+    for member in members:
+        msg += f'<a href="tg://user?id={member.user_id}">@{member.user.username}</a>, '
+    
+    msg = msg[:-2]    
+    await query.message.answer(msg, parse_mode="HTML")    
+    
     
 
     
