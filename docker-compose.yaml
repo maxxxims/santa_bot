@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: santa_bot
+    restart: unless-stopped
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=postgres          
+      - POSTGRES_PORT=5432              
+      - REDIS_HOST=redis                
+      - REDIS_PORT=6379                 
+      - REDIS_DB=0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis: 
+        condition: service_started
+
+    networks:
+      - backend_network       
+    volumes:
+      - ./bot/white_list.json:/app/bot/white_list.json
+
+
+  postgres:
+    image: postgres:15
+    container_name: santa_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - backend_network           
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+      
+
+  redis:
+    image: redis:7-alpine
+    container_name: santa_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes  
+    networks:
+      - backend_network                
+
+volumes:
+  postgres_data:
+  redis_data:
+
+
+networks:
+  backend_network:                    
+    driver: bridge

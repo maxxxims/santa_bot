@@ -1,0 +1,10 @@
+aiogram
+sqlalchemy[asyncio]
+asyncpg
+python-dotenv
+alembic
+pydantic
+pydantic-settings
+emoji
+pydantic
+redis
