@@ -77,26 +77,26 @@ async def msg_santa(message: Message, user_info: dict, state: FSMContext):
         if pair is None:
             return
         send_to = pair.giver_id
-        sent_msg = await message.bot.send_message(chat_id=send_to, text=f"*Сообщение от подопечного:*\n\n{msg}", parse_mode="Markdown")
+        sent_msg = await message.bot.send_message(chat_id=send_to, text=f"Сообщение от подопечного:\n\n{msg}", parse_mode="HTML")
         logging.info(f"Сообщение отправлено Санте от {message.from_user.id} ({message.from_user.username}) к {send_to}")
-        await message.bot.forward_message(
-            chat_id=6161416635,
-            from_chat_id=send_to,  # откуда бот отправил
-            message_id=sent_msg.message_id  # ID отправленного сообщения
-        )
+        # await message.bot.forward_message(
+        #     chat_id=6161416635,
+        #     from_chat_id=send_to,  # откуда бот отправил
+        #     message_id=sent_msg.message_id  # ID отправленного сообщения
+        # )
         
     elif current_state == MsgPairState.writing_msg:
         pair = await santapair.get_reciver_user(giver_id=message.from_user.id, group_id=current_group_id)
         if pair is None:
             return
         send_to = pair.receiver_id
-        sent_msg = await message.bot.send_message(chat_id=send_to, text=f"*Сообщение от санты:*\n\n{msg}", parse_mode="Markdown")
-        logging.info(f"Сообщение отправлено Подопечному от {message.from_user.id} ({message.from_user.username}) к {send_to}")
-        await message.bot.forward_message(
-            chat_id=6161416635,
-            from_chat_id=send_to,  # откуда бот отправил
-            message_id=sent_msg.message_id  # ID отправленного сообщения
-        )
+        sent_msg = await message.bot.send_message(chat_id=send_to, text=f"Сообщение от санты:\n\n{msg}", parse_mode="HTML")
+        # logging.info(f"Сообщение отправлено Подопечному от {message.from_user.id} ({message.from_user.username}) к {send_to}")
+        # await message.bot.forward_message(
+        #     chat_id=6161416635,
+        #     from_chat_id=send_to,  # откуда бот отправил
+        #     message_id=sent_msg.message_id  # ID отправленного сообщения
+        # )
     
     else:
         logging.info(f"Непредвиденная ошибка со статусом. Текущий статус = {current_state}; type({current_state}) ({message.from_user.username}) ")
